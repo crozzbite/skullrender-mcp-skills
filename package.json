@@ -4,26 +4,28 @@
   "description": "MCP server to expose AI agent skills",
   "type": "module",
   "main": "dist/index.js",
-  "bin": "dist/index.js",
+  "bin": "bundle/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.ts",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=bundle/index.js",
+    "package": "npm run bundle && pkg .",
     "dev": "tsx src/index.ts",
-    "inspect": "mcp-inspector dist/index.js",
-    "package": "pkg ."
+    "inspect": "mcp-inspector dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",
+    "glob": "^13.0.1",
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "@types/node": "^20.11.0",
+    "esbuild": "^0.20.0",
     "pkg": "^5.8.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   },
   "pkg": {
-    "scripts": "dist/**/*.js",
     "targets": [
       "node18-win-x64"
     ],
