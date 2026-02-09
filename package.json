@@ -1,0 +1,35 @@
+{
+  "name": "@skullrender/mcp-skills",
+  "version": "1.0.0",
+  "description": "MCP server to expose AI agent skills",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.ts",
+    "dev": "tsx src/index.ts",
+    "inspect": "mcp-inspector dist/index.js",
+    "package": "pkg ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "pkg": "^5.8.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "targets": [
+      "node18-win-x64"
+    ],
+    "outputPath": "bin"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
