@@ -1,144 +1,43 @@
-# @skullrender/mcp-skills
+# 💀 SkullRender Skills Pack v1.0
 
-MCP server that exposes AI agent skills to Claude Desktop and other MCP clients.
+Professional AI Skills ecosystem for Claude Desktop. This pack allows you to use pre-configured agent skills without technical knowledge.
 
-## Features
+## 📦 What's inside?
 
-- 📋 **List Skills** - Get all available skills with metadata
-- 📖 **Get Skill** - Retrieve the full content of any skill
-- 🔍 **Search Skills** - Find skills by query or tags
+- **`bin/mcp-skills.exe`**: Pre-built MCP server (no Node.js required).
+- **`skills/`**: A library of 18 high-quality skills (Gentleman + SkullRender).
+- **`install.bat`**: One-click installer for Windows.
 
-## Installation
+## 🚀 Easy Installation (Windows)
 
-```bash
-npm install @skullrender/mcp-skills
-```
+1. **Download/Clone** this repository to your computer.
+2. **Double-click** on `install.bat`.
+3. **Restart** Claude Desktop.
+4. **Done!** You now have all skills available.
 
-Or run directly:
+## 📝 Available Skills
 
-```bash
-npx @skullrender/mcp-skills
-```
+- **pensamiento-socratico**: Deep creativity and problem solving.
+- **impresion-3d**: Troubleshooting and 3D print optimization.
+- **arte-digital**: Color theory, composition, and digital workflow.
+- **angular / typescript / react / nextjs**: Modern software development.
+- ... and 11 more professional skills.
 
-## Configuration
+## 🛠️ Usage Examples
 
-### Claude Desktop
+Ask Claude:
+- *"Use the socratic thinking skill to help me with my new project."*
+- *"I have a 3D printing issue, what does the skill suggest?"*
+- *"Analyze my composition using the digital art skill."*
 
-Add to your `%APPDATA%\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac):
+## 🔒 Sharing Privately
 
-```json
-{
-  "mcpServers": {
-    "skills": {
-      "command": "npx",
-      "args": ["@skullrender/mcp-skills"],
-      "env": {
-        "SKILLS_PATH": "C:/path/to/your/skills"
-      }
-    }
-  }
-}
-```
+To share this with your team or family:
+1. Create a **Private Repository** on GitHub.
+2. Push this folder to that repository.
+3. They just need to download it and run `install.bat`.
 
-### Local Development
-
-```json
-{
-  "mcpServers": {
-    "skills": {
-      "command": "node",
-      "args": ["C:/Users/HP/.gemini/antigravity/playground/skullrender-mcp-skills/dist/index.js"],
-      "env": {
-        "SKILLS_PATH": "C:/Users/HP/.gemini/antigravity/playground/phylactery/brain/Gentleman-Skills/curated"
-      }
-    }
-  }
-}
-```
-
-## Tools
-
-### `skills_list`
-
-List all available skills.
-
-**Example Response:**
-```
-# Available Skills (16)
-
-• **angular** (v1.0)
-  Angular 17+ with Signals, Standalone Components, and modern Control Flow.
-
-• **typescript** (v1.0)
-  TypeScript best practices and patterns.
-...
-```
-
-### `skills_get`
-
-Get the full content of a specific skill.
-
-**Input:**
-```json
-{
-  "name": "angular"
-}
-```
-
-**Response:** Full SKILL.md content with all patterns and examples.
-
-### `skills_search`
-
-Search for skills by query.
-
-**Input:**
-```json
-{
-  "query": "testing",
-  "limit": 5
-}
-```
-
-**Response:** List of matching skills ordered by relevance.
-
-## Skill Format
-
-Skills must follow this format:
-
-```markdown
----
-name: skill-name
-description: >
-  What the skill does.
-  Trigger: When to use this skill.
-metadata:
-  author: your-name
-  version: "1.0"
 ---
 
-## When to Use
-...
-
-## Critical Patterns
-...
-```
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Test with MCP Inspector
-npm run inspect
-
-# Run in development mode
-npm run dev
-```
-
-## License
-
-MIT - SkullRender
+**Developed by SkullRender**
+*Rational Creativity: Bones + Brain.*
