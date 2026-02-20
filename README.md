@@ -1,22 +1,29 @@
-# 💀 SkullRender Skills Pack v1.0
+# 💀 SkullRender Skills Pack MVP (Node Version)
 
-Professional AI Skills ecosystem for Claude Desktop. This pack allows you to use pre-configured agent skills without technical knowledge.
+Professional AI Skills ecosystem for Claude. Inspired by the zero-friction deployment of tools like `engram`, this MCP server configures itself automatically into your AI Agent of choice.
 
-## 📦 What's inside?
+## 🚀 Easy Installation (Global Bun)
 
-- **`bin/mcp-skills.exe`**: Pre-built MCP server (no Node.js required).
-- **`skills/`**: A library of 18 high-quality skills (Gentleman + SkullRender).
-- **`install.bat`**: One-click installer for Windows.
+1. **Clone** this repository to your computer.
+2. **Install globally**:
+```bash
+bun link
+```
+3. **Setup your agent**:
+```bash
+bun run skullrender-skills setup claude-code
+# OR
+skullrender-skills setup claude-desktop
+```
+4. **Done!** The server is now registered correctly. (Restart your agent or Claude Desktop).
 
-## 🚀 Easy Installation (Windows)
-
-1. **Download/Clone** this repository to your computer.
-2. **Double-click** on `install.bat`.
-3. **Restart** Claude Desktop.
-4. **Done!** You now have all skills available.
+## 📦 Architecture
+- Uses ESBuild to compile a single lightweight javascript chunk.
+- Auto-injects configuration into `~/.claude/settings.json` or `%APPDATA%\Claude\claude_desktop_config.json`.
+- Dynamically resolves the `SKILLS_PATH` so you don't need to copy files into system folders.
+- **Node.js** is required.
 
 ## 📝 Available Skills
-
 - **pensamiento-socratico**: Deep creativity and problem solving.
 - **impresion-3d**: Troubleshooting and 3D print optimization.
 - **arte-digital**: Color theory, composition, and digital workflow.
@@ -24,18 +31,10 @@ Professional AI Skills ecosystem for Claude Desktop. This pack allows you to use
 - ... and 11 more professional skills.
 
 ## 🛠️ Usage Examples
-
 Ask Claude:
 - *"Use the socratic thinking skill to help me with my new project."*
 - *"I have a 3D printing issue, what does the skill suggest?"*
 - *"Analyze my composition using the digital art skill."*
-
-## 🔒 Sharing Privately
-
-To share this with your team or family:
-1. Create a **Private Repository** on GitHub.
-2. Push this folder to that repository.
-3. They just need to download it and run `install.bat`.
 
 ---
 

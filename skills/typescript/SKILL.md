@@ -1,110 +1,66 @@
 ---
 name: typescript
 description: >
-  TypeScript strict patterns and best practices.
-  Trigger: When writing TypeScript code - types, interfaces, generics.
-license: Apache-2.0
+  Strict TypeScript rules for SkullRender.
+  Trigger: When writing TypeScript code, defining interfaces, or managing types.
 metadata:
-  author: gentleman-programming
-  version: "1.0"
+  version: 1.1.0
+  author: SkullRender (Antigravity)
 ---
 
-## Const Types Pattern (REQUIRED)
+## When to Use
+Load this skill when:
+- Writing new TypeScript code.
+- Defining models, interfaces, or types.
+- Cleaning up untyped or loosely typed code.
 
+## Critical Patterns
+
+### 1. Strict Typing
+"If it compiles, it must be correct".
+
+| Pattern | Rule | Why |
+|---------|------|-----|
+| `any` | FORBIDDEN | Use `unknown` and type guards instead. |
+| Returns | Explicitly declare | Improves readability and prevents logic errors. |
+| Null Checks | Strict | Force the handling of `null/undefined`. |
+
+### 2. Data Structures
+Prefer modern, lean type definitions.
+
+| Use Case | Pattern |
+|----------|---------|
+| Enums | ❌ Prohibited. Use `const assertions` or `Union Types`. |
+| Immutability| Use `readonly` for arrays and object properties. |
+| Validation | Use `Zod` for runtime validation. |
+
+## Code Examples
+
+### Example: Proper Union Types
 ```typescript
-// ✅ ALWAYS: Create const object first, then extract type
-const STATUS = {
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-  PENDING: "pending",
+type Role = 'Admin' | 'User';
+
+const ROLES = {
+  ADMIN: 'Admin',
+  USER: 'User'
 } as const;
-
-type Status = (typeof STATUS)[keyof typeof STATUS];
-
-// ❌ NEVER: Direct union types
-type Status = "active" | "inactive" | "pending";
 ```
 
-**Why?** Single source of truth, runtime values, autocomplete, easier refactoring.
+## Anti-Patterns
 
-## Flat Interfaces (REQUIRED)
-
+### Don't: Non-Null Assertions (`!`)
+Why: It lies to the compiler and causes runtime crashes.
 ```typescript
-// ✅ ALWAYS: One level depth, nested objects → dedicated interface
-interface UserAddress {
-  street: string;
-  city: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  address: UserAddress;  // Reference, not inline
-}
-
-interface Admin extends User {
-  permissions: string[];
-}
-
-// ❌ NEVER: Inline nested objects
-interface User {
-  address: { street: string; city: string };  // NO!
-}
+// ❌ const user = users.find(u => u.id === id)!;
 ```
 
-## Never Use `any`
-
+### Don't: Interface Prefixes
+Why: Redundant and outdated.
 ```typescript
-// ✅ Use unknown for truly unknown types
-function parse(input: unknown): User {
-  if (isUser(input)) return input;
-  throw new Error("Invalid input");
-}
-
-// ✅ Use generics for flexible types
-function first<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-
-// ❌ NEVER
-function parse(input: any): any { }
+// ❌ interface IUser { ... }
 ```
 
-## Utility Types
-
-```typescript
-Pick<User, "id" | "name">     // Select fields
-Omit<User, "id">              // Exclude fields
-Partial<User>                 // All optional
-Required<User>                // All required
-Readonly<User>                // All readonly
-Record<string, User>          // Object type
-Extract<Union, "a" | "b">     // Extract from union
-Exclude<Union, "a">           // Exclude from union
-NonNullable<T | null>         // Remove null/undefined
-ReturnType<typeof fn>         // Function return type
-Parameters<typeof fn>         // Function params tuple
-```
-
-## Type Guards
-
-```typescript
-function isUser(value: unknown): value is User {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "id" in value &&
-    "name" in value
-  );
-}
-```
-
-## Import Types
-
-```typescript
-import type { User } from "./types";
-import { createUser, type Config } from "./utils";
-```
-
-## Keywords
-typescript, ts, types, interfaces, generics, strict mode, utility types
+## Quick Reference
+- **No Enums**: Only Union Types or Const Assertions.
+- **Strict**: `strict: true` in `tsconfig.json`.
+- **Naming**: Use PascalCase for types/interfaces.

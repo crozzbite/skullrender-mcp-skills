@@ -166,7 +166,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-async function main() {
+export async function runMcpServer() {
   console.error('Starting @skullrender/mcp-skills server...');
   console.error(`Skills path: ${skillsManager.getSkillsPath()}`);
   
@@ -178,7 +178,3 @@ async function main() {
   console.error('MCP Skills Server running on stdio');
 }
 
-main().catch((error) => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
