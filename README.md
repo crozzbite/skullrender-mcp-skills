@@ -9,13 +9,25 @@ Professional AI Skills ecosystem for Claude. Inspired by the zero-friction deplo
 ```bash
 bun link
 ```
-3. **Setup your agent**:
+3. **Setup your agent** (skills from this repo's `./skills`):
 ```bash
 bun run skullrender-skills setup claude-code
 # OR
 skullrender-skills setup claude-desktop
 ```
-4. **Done!** The server is now registered correctly. (Restart your agent or Claude Desktop).
+
+   **Usar skills/rules desde WorkSpace (una sola fuente de verdad):** antes del setup, define `SKILLS_PATH` apuntando a la carpeta de skills de WorkSpace; el MCP cargará desde ahí:
+```powershell
+# PowerShell (Windows)
+$env:SKILLS_PATH = "C:\path\to\WorkSpace\.agents\skills"
+bun run skullrender-skills setup claude-code
+```
+```bash
+# Bash
+export SKILLS_PATH="/ruta/a/WorkSpace/.agents/skills"
+bun run skullrender-skills setup claude-code
+```
+4. **Rebuild** si cambiaste `src/`: `bun run bundle`. Luego reinicia el agente o Claude Desktop.
 
 ## 📦 Architecture
 - Uses ESBuild to compile a single lightweight javascript chunk.

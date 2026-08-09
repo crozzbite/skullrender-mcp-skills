@@ -1,0 +1,29 @@
+{
+  "_comment": "Plantilla: sustituir <MODELO>, alias y fallbacks. Validar con: openclaw config validate",
+  "agents": {
+    "defaults": {
+      "timeoutSeconds": 900,
+      "model": {
+        "primary": "ollama/<MODELO>",
+        "fallbacks": ["ollama/llama3.1:8b", "ollama/llama3.2:3b"]
+      },
+      "models": {
+        "ollama/<MODELO>": {
+          "alias": "LocalPotente-<NOMBRE-CORTO>",
+          "params": {
+            "num_ctx": 16384,
+            "num_predict": 4096
+          }
+        }
+      }
+    }
+  },
+  "tools": {
+    "profile": "coding",
+    "byProvider": {
+      "ollama": {
+        "profile": "coding"
+      }
+    }
+  }
+}

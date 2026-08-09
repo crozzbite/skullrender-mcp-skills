@@ -119,162 +119,119 @@ var SkillsManager = class {
 };
 
 // src/index.ts
-var skillsManager = new SkillsManager();
-var server = new Server(
-  {
-    name: "@skullrender/mcp-skills",
-    version: "1.0.0"
-  },
-  {
-    capabilities: {
-      tools: {}
-    }
-  }
-);
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "skills_list",
-        description: "List all available AI agent skills with their metadata.",
-        inputSchema: {
-          type: "object",
-          properties: {},
-          required: []
-        }
-      },
-      {
-        name: "skills_get",
-        description: "Get the full content of a specific skill by name. Returns the complete SKILL.md content including all patterns, examples, and instructions.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            name: {
-              type: "string",
-              description: 'The name of the skill to retrieve (e.g., "angular", "typescript", "pytest")'
-            }
-          },
-          required: ["name"]
-        }
-      },
-      {
-        name: "skills_search",
-        description: "Search for skills by query text. Searches in skill names, descriptions, and content.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            query: {
-              type: "string",
-              description: 'Search query (e.g., "testing", "react forms", "API validation")'
-            },
-            tags: {
-              type: "array",
-              items: { type: "string" },
-              description: "Optional tags to filter results"
-            },
-            limit: {
-              type: "number",
-              description: "Maximum number of results to return (default: 5)"
-            }
-          },
-          required: ["query"]
-        }
+async function runMcpServer(skillsPath) {
+  const skillsManager = new SkillsManager(skillsPath);
+  const server = new Server(
+    {
+      name: "@skullrender/mcp-skills",
+      version: "1.0.0"
+    },
+    {
+      capabilities: {
+        tools: {}
       }
-    ]
-  };
-});
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args2 } = request.params;
-  switch (name) {
-    case "skills_list": {
-      const skills = skillsManager.list();
-      const formatted = skills.map(
-        (s) => `\u2022 **${s.name}** (v${s.version || "1.0"})
+    }
+  );
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    return {
+      tools: [
+        {
+          name: "skills_list",
+          description: "List all available AI agent skills with their metadata.",
+          inputSchema: { type: "object", properties: {}, required: [] }
+        },
+        {
+          name: "skills_get",
+          description: "Get the full content of a specific skill by name. Returns the complete SKILL.md content including all patterns, examples, and instructions.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: 'The name of the skill to retrieve (e.g., "angular", "typescript", "pytest")' }
+            },
+            required: ["name"]
+          }
+        },
+        {
+          name: "skills_search",
+          description: "Search for skills by query text. Searches in skill names, descriptions, and content.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              query: { type: "string", description: 'Search query (e.g., "testing", "react forms", "API validation")' },
+              tags: { type: "array", items: { type: "string" }, description: "Optional tags to filter results" },
+              limit: { type: "number", description: "Maximum number of results to return (default: 5)" }
+            },
+            required: ["query"]
+          }
+        }
+      ]
+    };
+  });
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name, arguments: args2 } = request.params;
+    switch (name) {
+      case "skills_list": {
+        const skills = skillsManager.list();
+        const formatted = skills.map(
+          (s) => `\u2022 **${s.name}** (v${s.version || "1.0"})
   ${s.description}`
-      ).join("\n\n");
-      return {
-        content: [
-          {
-            type: "text",
-            text: `# Available Skills (${skills.length})
-
-${formatted}`
-          }
-        ]
-      };
-    }
-    case "skills_get": {
-      const skillName = args2.name;
-      const skill = skillsManager.get(skillName);
-      if (!skill) {
-        const available = skillsManager.list().map((s) => s.name).join(", ");
+        ).join("\n\n");
         return {
-          content: [
-            {
-              type: "text",
-              text: `Skill "${skillName}" not found.
+          content: [{ type: "text", text: `# Available Skills (${skills.length})
 
-Available skills: ${available}`
-            }
-          ],
-          isError: true
+${formatted}` }]
         };
       }
-      return {
-        content: [
-          {
-            type: "text",
-            text: skill.rawContent
-          }
-        ]
-      };
-    }
-    case "skills_search": {
-      const { query, tags, limit } = args2;
-      const results = skillsManager.search(query, tags, limit || 5);
-      if (results.length === 0) {
+      case "skills_get": {
+        const skillName = args2.name;
+        const skill = skillsManager.get(skillName);
+        if (!skill) {
+          const available = skillsManager.list().map((s) => s.name).join(", ");
+          return {
+            content: [{ type: "text", text: `Skill "${skillName}" not found.
+
+Available skills: ${available}` }],
+            isError: true
+          };
+        }
         return {
-          content: [
-            {
-              type: "text",
-              text: `No skills found matching "${query}".`
-            }
-          ]
+          content: [{ type: "text", text: skill.rawContent }]
         };
       }
-      const formatted = results.map(
-        (s, i) => `${i + 1}. **${s.name}**
+      case "skills_search": {
+        const { query, tags, limit } = args2;
+        const results = skillsManager.search(query, tags, limit || 5);
+        if (results.length === 0) {
+          return {
+            content: [{ type: "text", text: `No skills found matching "${query}".` }]
+          };
+        }
+        const formatted = results.map(
+          (s, i) => `${i + 1}. **${s.name}**
    ${s.description}`
-      ).join("\n\n");
-      return {
-        content: [
-          {
+        ).join("\n\n");
+        return {
+          content: [{
             type: "text",
             text: `# Search Results for "${query}" (${results.length})
 
 ${formatted}
 
 Use \`skills_get\` with the skill name to get the full content.`
-          }
-        ]
-      };
+          }]
+        };
+      }
+      default:
+        return {
+          content: [{ type: "text", text: `Unknown tool: ${name}` }],
+          isError: true
+        };
     }
-    default:
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Unknown tool: ${name}`
-          }
-        ],
-        isError: true
-      };
-  }
-});
-async function runMcpServer() {
+  });
   console.error("Starting @skullrender/mcp-skills server...");
   console.error(`Skills path: ${skillsManager.getSkillsPath()}`);
   await skillsManager.loadSkills();
+  console.error(`Loaded ${skillsManager.list().length} skills`);
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("MCP Skills Server running on stdio");
@@ -288,6 +245,16 @@ import { fileURLToPath } from "url";
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path2.dirname(__filename);
 var [, , command, ...args] = process.argv;
+var DEFAULT_SKILLS_PATH = path2.resolve(__dirname, "../skills");
+function resolveSkillsPath() {
+  if (args[0] === "--skills-path" && args[1]) {
+    return path2.resolve(args[1]);
+  }
+  if (args[0] && args[0] !== "--skills-path" && (args[0].includes(path2.sep) || args[0].startsWith("C:"))) {
+    return path2.resolve(args[0]);
+  }
+  return process.env.SKILLS_PATH || DEFAULT_SKILLS_PATH;
+}
 async function setupClaudeCode() {
   const configDir = path2.join(os.homedir(), ".claude");
   const configPath = path2.join(configDir, "settings.json");
@@ -306,16 +273,17 @@ async function setupClaudeCode() {
   if (!config.mcpServers)
     config.mcpServers = {};
   const executablePath = path2.resolve(__dirname, "cli.js");
-  const skillsPath = path2.resolve(__dirname, "../skills");
+  const skillsPath = process.env.SKILLS_PATH || path2.resolve(__dirname, "../skills");
   config.mcpServers["skullrender-skills"] = {
     command: "node",
-    args: [executablePath, "mcp"],
+    args: [executablePath, "mcp", skillsPath],
     env: {
       SKILLS_PATH: skillsPath
     }
   };
   fs2.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
   console.log(`[+] Added skullrender-skills to Claude Code MCP config at ${configPath}`);
+  console.log(`[+] SKILLS_PATH = ${skillsPath}`);
 }
 async function setupClaudeDesktop() {
   const appData = process.env.APPDATA || (process.platform === "darwin" ? process.env.HOME + "/Library/Application Support" : "/var/local");
@@ -334,21 +302,23 @@ async function setupClaudeDesktop() {
   if (!config.mcpServers)
     config.mcpServers = {};
   const executablePath = path2.resolve(__dirname, "cli.js");
-  const skillsPath = path2.resolve(__dirname, "../skills");
+  const skillsPath = process.env.SKILLS_PATH || path2.resolve(__dirname, "../skills");
   config.mcpServers["skullrender-skills"] = {
     command: "node",
-    args: [executablePath, "mcp"],
+    args: [executablePath, "mcp", skillsPath],
     env: {
       SKILLS_PATH: skillsPath
     }
   };
   fs2.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
   console.log(`[+] Added skullrender-skills to Claude Desktop at ${configPath}`);
+  console.log(`[+] SKILLS_PATH = ${skillsPath}`);
   console.log("[!] Please restart Claude Desktop completely.");
 }
 async function main() {
   if (command === "mcp") {
-    await runMcpServer();
+    const skillsPath = resolveSkillsPath();
+    await runMcpServer(skillsPath);
   } else if (command === "setup") {
     const agent = args[0];
     if (agent === "claude-code") {
@@ -361,9 +331,10 @@ async function main() {
   } else {
     console.log(`SkullRender MCP Skills Server`);
     console.log(`Usage:`);
-    console.log(`  skullrender-skills mcp                      Start the MCP Server`);
-    console.log(`  skullrender-skills setup claude-code        Configure Claude Code (CLI)`);
-    console.log(`  skullrender-skills setup claude-desktop     Configure Claude Desktop`);
+    console.log(`  node cli.js mcp [path]              Start MCP (path = SKILLS_PATH or env or ./skills)`);
+    console.log(`  node cli.js mcp --skills-path <path>`);
+    console.log(`  node cli.js setup claude-code      Configure Claude Code`);
+    console.log(`  node cli.js setup claude-desktop  Configure Claude Desktop`);
   }
 }
 main().catch((err) => {
